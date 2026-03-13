@@ -1,0 +1,4 @@
+# Optional: pyyaml for config parsing (stdlib fallback included)
+# pyyaml>=6.0
+# All scripts use only Python stdlib (urllib, json, os, etc.)
+# No pip install needed!

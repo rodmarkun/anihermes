@@ -1,0 +1,39 @@
+# AniHermes Configuration
+# Copy to ~/.hermes/anihermes/config.yaml and customize
+
+storage:
+  # Where anime episodes are stored
+  anime_path: ~/Anime
+  # Folder structure: {anime_path}/{series}/{season}/
+  organize_by: series/season
+
+torrent:
+  client: qbittorrent
+  webui_url: http://localhost:8081
+
+sources:
+  # Primary source for anime downloads
+  preferred: subsplease
+  # Fallback sources (searched via delegate_task in parallel)
+  fallbacks:
+    - nyaa
+  # Default quality: 480p, 720p, or 1080p
+  quality: 1080p
+
+# Anime tracker — choose one: anilist or mal
+# The install script sets this up for you
+tracker: anilist
+
+anilist:
+  # Your Anilist username (public, for read-only watchlist access)
+  username: ""
+
+mal:
+  # Your MAL username (public, for read-only watchlist access)
+  username: ""
+  # MAL API Client ID (get one at https://myanimelist.net/apiconfig)
+  client_id: ""
+
+notifications:
+  # Platform for alerts: telegram, discord, or cli
+  platform: telegram
