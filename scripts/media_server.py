@@ -360,8 +360,8 @@ class AnimeHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def __init__(self, *args, anime_path="", **kwargs):
-        self._anime_path = anime_path
-        super().__init__(*args, directory=anime_path, **kwargs)
+        self._anime_path = os.path.realpath(anime_path)
+        super().__init__(*args, directory=self._anime_path, **kwargs)
 
     def guess_type(self, path):
         ext = os.path.splitext(path)[1].lower()
@@ -375,10 +375,10 @@ class AnimeHandler(SimpleHTTPRequestHandler):
         url_path = url_path.split("?", 1)[0].split("#", 1)[0]
         parts = url_path.strip("/").split("/")
         if parts[0]:
-            safe = os.path.normpath(os.path.join(self._anime_path, *parts))
+            safe = os.path.realpath(os.path.join(self._anime_path, *parts))
         else:
             safe = self._anime_path
-        if not safe.startswith(os.path.realpath(self._anime_path)):
+        if safe != self._anime_path and not safe.startswith(self._anime_path + os.sep):
             return self._anime_path
         return safe
 
@@ -992,7 +992,7 @@ def main():
 
     server_conf = config.get("server", {})
     port = args.port or int(server_conf.get("port", 8888))
-    bind = args.bind or server_conf.get("bind", "0.0.0.0")
+    bind = args.bind or server_conf.get("bind", "127.0.0.1")
     anime_path = config.get("storage", {}).get("anime_path", os.path.expanduser("~/Anime"))
 
     if args.command == "start":

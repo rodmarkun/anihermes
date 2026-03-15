@@ -323,7 +323,7 @@ def get_seasons(title):
     return ordered
 
 
-
+def get_recommendations(media_id):
     """Get recommendations for an anime."""
     query = """
     query ($id: Int) {

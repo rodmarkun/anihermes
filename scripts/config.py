@@ -101,8 +101,8 @@ def load_config(config_path=None):
     config.setdefault("notifications", {})
 
     # Inject secrets from environment (never stored in config.yaml)
-    config["torrent"]["username"] = os.environ.get("QBIT_USERNAME", "admin")
-    config["torrent"]["password"] = os.environ.get("QBIT_PASSWORD", "adminadmin")
+    config["torrent"]["username"] = os.environ.get("QBIT_USERNAME", "")
+    config["torrent"]["password"] = os.environ.get("QBIT_PASSWORD", "")
     config["anilist"]["oauth_token"] = os.environ.get("ANILIST_OAUTH_TOKEN", "")
     config["mal"].setdefault("client_id", os.environ.get("MAL_CLIENT_ID", ""))
     config["mal"]["oauth_token"] = os.environ.get("MAL_OAUTH_TOKEN", "")
@@ -144,7 +144,11 @@ if __name__ == "__main__":
             else:
                 val = None
                 break
-        if val is not None:
+        # Redact known secret keys
+        secret_keys = {"password", "oauth_token"}
+        if val is not None and len(parts) >= 2 and parts[-1] in secret_keys:
+            print("***")
+        elif val is not None:
             print(val if isinstance(val, str) else json.dumps(val))
         else:
             print(f"Key '{args.key}' not found", file=__import__("sys").stderr)

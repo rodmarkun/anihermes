@@ -193,7 +193,8 @@ def main():
         print("To delete: python3 library_manager.py cleanup '{name}' --confirm")
 
     elif args.command == "cleanup":
-        match = next((s for s in library if args.series.lower() in s["name"].lower()), None)
+        # Require exact (case-insensitive) match for deletion safety
+        match = next((s for s in library if args.series.lower() == s["name"].lower()), None)
         if not match:
             print(f"Series '{args.series}' not found in library.")
             return 1

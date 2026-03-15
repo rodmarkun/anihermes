@@ -36,8 +36,8 @@ mal:
 
 server:
   port: 8888
-  # Bind address (0.0.0.0 = all interfaces = LAN accessible)
-  bind: 0.0.0.0
+  # Bind address: 127.0.0.1 = localhost only, 0.0.0.0 = LAN accessible
+  bind: 127.0.0.1
 
 notifications:
   # Platform for alerts: telegram, discord, or cli

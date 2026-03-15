@@ -293,6 +293,8 @@ fi
 
 # Append secrets to .env (only if not already present)
 ENV_FILE="${HERMES_DIR}/.env"
+touch "$ENV_FILE"
+chmod 600 "$ENV_FILE"
 if ! grep -q "QBIT_USERNAME" "$ENV_FILE" 2>/dev/null; then
     echo "" >> "$ENV_FILE"
     echo "$secrets" >> "$ENV_FILE"
