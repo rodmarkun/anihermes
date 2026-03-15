@@ -10,17 +10,22 @@
    - Filter for jobs with "AniHermes:" prefix
    - If series already tracked: inform user, skip
 
-2. Get series info:
+2. Determine tracker:
+   terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
+   - If "anilist": TRACKER_SCRIPT=anihermes_anilist_api.py
+   - If "mal": TRACKER_SCRIPT=anihermes_mal_api.py
+
+3. Get series info:
    terminal("python3 ~/.hermes/scripts/anihermes_subsplease.py search '{series}'")
 
-3. Create weekly CRON job:
+4. Create weekly CRON job (use the resolved TRACKER_SCRIPT name in the prompt):
    schedule_cronjob(
      prompt="AniHermes auto-download check for {series}:
        1. Run: terminal('python3 ~/.hermes/scripts/anihermes_subsplease.py latest \"{series}\" --quality 1080p')
        2. Check what episodes exist: terminal('python3 ~/.hermes/scripts/anihermes_library_manager.py info \"{series}\"')
        3. If new episode available that's not in library:
           - Download it: terminal('python3 ~/.hermes/scripts/anihermes_add_torrent.py --series \"{series}\" --season \"{season}\" --magnet \"{magnet}\"')
-          - Update Anilist progress if configured: terminal('python3 ~/.hermes/scripts/anihermes_{TRACKER}_api.py update {media_id} {new_episode}')
+          - Update tracker progress: terminal('python3 ~/.hermes/scripts/{TRACKER_SCRIPT} update {media_id} {new_episode}')
           - Report: 'Downloaded {series} episode {N}'
        4. If no new episode and 3+ weeks since last release:
           - Series likely ended
@@ -32,14 +37,13 @@
      name="AniHermes: {series}"
    )
 
-4. Update tracker (if configured):
-   - Determine tracker: terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
-   - Anilist: terminal("python3 ~/.hermes/scripts/anihermes_anilist_api.py status {media_id} CURRENT")
-   - MAL: terminal("python3 ~/.hermes/scripts/anihermes_mal_api.py status {anime_id} watching")
+5. Update tracker status:
+   terminal("python3 ~/.hermes/scripts/{TRACKER_SCRIPT} status {media_id} CURRENT/watching")
+   - Use CURRENT for Anilist, watching for MAL
 
-5. Confirm:
+6. Confirm:
    - CRON job created with schedule
-   - Anilist status updated (if applicable)
+   - Tracker status updated (if applicable)
    - Next check time
 ```
 
@@ -53,16 +57,21 @@
    - Find "AniHermes: {series}"
    - remove_cronjob("{job_id}")
 
-2. Update tracker (if configured):
-   - Anilist: terminal("python3 ~/.hermes/scripts/anihermes_anilist_api.py status {media_id} DROPPED")
-   - MAL: terminal("python3 ~/.hermes/scripts/anihermes_mal_api.py status {anime_id} dropped")
+2. Determine tracker:
+   terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
+   - If "anilist": SCRIPT=anihermes_anilist_api.py
+   - If "mal": SCRIPT=anihermes_mal_api.py
 
-3. Ask about files:
+3. Update tracker status:
+   terminal("python3 ~/.hermes/scripts/{SCRIPT} status {media_id} DROPPED/dropped")
+   - Use DROPPED for Anilist, dropped for MAL
+
+4. Ask about files:
    "Do you want me to also delete the downloaded episodes? ({size} will be freed)"
    - If yes: terminal("python3 ~/.hermes/scripts/anihermes_library_manager.py cleanup '{series}' --confirm")
    - If no: keep files
 
-4. Confirm all actions taken
+5. Confirm all actions taken
 ```
 
 ## Daily Schedule Digest

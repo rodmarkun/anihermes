@@ -277,14 +277,19 @@ The server provides a styled web UI at `http://LAN_IP:8888/` where any device on
 1. Analyze the image:
    vision_analyze(image, prompt="Identify this anime. Describe the characters, art style, and any recognizable elements.")
 
-2. If identified with confidence:
-   - Verify: web_search("{identified_anime} anime")
-   - Search tracker: terminal("python3 ~/.hermes/scripts/anihermes_{tracker}_api.py search '{identified_anime}'")
+2. Determine tracker:
+   terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
+   - If "anilist": SCRIPT=anihermes_anilist_api.py
+   - If "mal": SCRIPT=anihermes_mal_api.py
 
-3. If uncertain:
+3. If identified with confidence:
+   - Verify: web_search("{identified_anime} anime")
+   - Search tracker: terminal("python3 ~/.hermes/scripts/{SCRIPT} search '{identified_anime}'")
+
+4. If uncertain:
    - web_search("anime identification {description_from_vision}")
 
-4. Present results and offer to download or track.
+5. Present results and offer to download or track.
 ```
 
 ---

@@ -32,21 +32,26 @@
 
 **IMPORTANT: Episode number mapping**
 SubsPlease uses ABSOLUTE episode numbers across all seasons (e.g. Frieren S2 ep 8 = absolute ep 36).
-Anilist tracks progress PER SEASON. You MUST use the `seasons` command to map between them.
+Trackers (Anilist/MAL) track progress PER SEASON. You MUST use the `seasons` command to map between them.
 
 ```
-1. Get season map (absolute → relative episode mapping):
-   terminal("python3 ~/.hermes/scripts/anihermes_anilist_api.py seasons '{series}'")
+1. Determine tracker:
+   terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
+   - If "anilist": SCRIPT=anihermes_anilist_api.py
+   - If "mal": SCRIPT=anihermes_mal_api.py
+
+2. Get season map (absolute → relative episode mapping):
+   terminal("python3 ~/.hermes/scripts/{SCRIPT} seasons '{series}'")
    - This returns each season with: episode count, aired count, absolute range
    - Example: S1 = abs 1-28 (28 eps), S2 = abs 29-38 (10 eps, 8 aired)
 
-2. Get user's current progress from Anilist:
-   terminal("python3 ~/.hermes/scripts/anihermes_anilist_api.py watchlist")
+3. Get user's current progress:
+   terminal("python3 ~/.hermes/scripts/{SCRIPT} watchlist")
    - Find the entry matching the series
    - Note: progress is PER-SEASON (e.g. "5" means ep 5 of that specific season)
-   - Identify WHICH season the user is on from the Anilist media ID
+   - Identify WHICH season the user is on from the tracker media ID
 
-3. Calculate which episodes to download:
+4. Calculate which episodes to download:
    - From the season map, find the user's current season
    - User has seen: episodes 1 through {progress} of that season
    - Episodes to download: {progress + 1} through {aired_episodes} of current season
@@ -55,11 +60,11 @@ Anilist tracks progress PER SEASON. You MUST use the `seasons` command to map be
      * For RELEASING seasons: only download up to {aired_episodes}, NOT total {episodes}
    - If current season is complete, also check if next season has started
 
-4. Convert needed episodes to absolute numbers for SubsPlease:
+5. Convert needed episodes to absolute numbers for SubsPlease:
    - absolute_ep = season_start_absolute + (relative_ep - 1)
    - Example: S2 ep 9 = 29 + (9-1) = absolute 37
 
-5. Get all available episodes with magnet links:
+6. Get all available episodes with magnet links:
    terminal("python3 ~/.hermes/scripts/anihermes_subsplease.py episodes '{series}' --quality 1080")
    - This lists ALL episodes with their magnet links printed below each one
    - Match the absolute episode numbers you need from this output
@@ -67,10 +72,10 @@ Anilist tracks progress PER SEASON. You MUST use the `seasons` command to map be
    - If SubsPlease has no results, try Nyaa:
      terminal("python3 ~/.hermes/scripts/anihermes_nyaa.py best '{series} {absolute_ep} 1080p'")
 
-6. For each episode with a magnet:
+7. For each episode with a magnet:
    terminal("python3 ~/.hermes/scripts/anihermes_add_torrent.py --series '{series}' --season 'S{N}' --magnet '{magnet}'")
 
-7. Report summary:
+8. Report summary:
    - "Downloaded X episodes of {series} S{N} (eps {from}-{to})"
    - "Y episodes not yet aired (next airing: ...)"
    - Offer to update Anilist progress
