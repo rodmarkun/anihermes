@@ -16,12 +16,13 @@
    terminal("python3 ~/.hermes/scripts/anihermes_nyaa.py best '{series} episode {N} 1080p'")
    - Use the magnet link from the output
 
-4. Download via qbittorrent:
-   terminal("python3 ~/.hermes/scripts/anihermes_add_torrent.py --series '{series}' --season '{season}' --magnet '{magnet_link}'")
+4. Download via qbittorrent (ALWAYS use this script — it reads anime_path from config):
+   terminal("python3 ~/.hermes/scripts/anihermes_add_torrent.py add --series '{series}' --season '{season}' --magnet '{magnet_link}'")
+   NEVER add torrents manually or with execute_code. NEVER write custom scripts. NEVER hardcode paths. The script reads the save path from config.yaml automatically.
 
 5. Confirm to user:
    - Series name, episode number
-   - Save location
+   - Save location (from script output)
    - Monitor URL from config
 ```
 
@@ -58,14 +59,13 @@ Anilist tracks progress PER SEASON. You MUST use the `seasons` command to map be
    - absolute_ep = season_start_absolute + (relative_ep - 1)
    - Example: S2 ep 9 = 29 + (9-1) = absolute 37
 
-5. Download each missing episode:
-   For each episode to download:
-   terminal("python3 ~/.hermes/scripts/anihermes_subsplease.py latest '{series}' --quality 1080")
-   - SubsPlease search returns episodes by absolute number
-   - Match the absolute episode number
-   - If specific episode not found via 'latest', try:
-     terminal("python3 ~/.hermes/scripts/anihermes_subsplease.py episodes '{series}' --quality 1080")
-     and pick the matching episode from the list
+5. Get all available episodes with magnet links:
+   terminal("python3 ~/.hermes/scripts/anihermes_subsplease.py episodes '{series}' --quality 1080")
+   - This lists ALL episodes with their magnet links printed below each one
+   - Match the absolute episode numbers you need from this output
+   - NEVER write custom scripts to extract magnets — the episodes command already prints them
+   - If SubsPlease has no results, try Nyaa:
+     terminal("python3 ~/.hermes/scripts/anihermes_nyaa.py best '{series} {absolute_ep} 1080p'")
 
 6. For each episode with a magnet:
    terminal("python3 ~/.hermes/scripts/anihermes_add_torrent.py --series '{series}' --season 'S{N}' --magnet '{magnet}'")
@@ -106,20 +106,11 @@ Anilist tracks progress PER SEASON. You MUST use the `seasons` command to map be
 **Triggers:** "Is my download done?", "Download status", "What's downloading?"
 
 ```
-1. Check qbittorrent status via WebUI API:
-   terminal("python3 -c \"
-import http.cookiejar, urllib.request, urllib.parse, json, os
-url = 'http://localhost:8081'
-jar = http.cookiejar.CookieJar()
-opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
-data = urllib.parse.urlencode({'username': os.environ.get('QBIT_USERNAME','admin'), 'password': os.environ.get('QBIT_PASSWORD','adminadmin')}).encode()
-opener.open(urllib.request.Request(url+'/api/v2/auth/login', data), timeout=5)
-resp = opener.open(url+'/api/v2/torrents/info?filter=downloading', timeout=5)
-torrents = json.loads(resp.read())
-for t in torrents:
-    print(f'{t[\"name\"]} - {t[\"progress\"]*100:.1f}% ({t[\"dlspeed\"]/1024/1024:.1f} MB/s, ETA: {t[\"eta\"]}s)')
-if not torrents: print('No active downloads')
-\"")
+1. Check download status:
+   terminal("python3 ~/.hermes/scripts/anihermes_add_torrent.py status")
+
+   To see all torrents (including seeding/paused):
+   terminal("python3 ~/.hermes/scripts/anihermes_add_torrent.py status --all")
 
 2. Report status to user with progress, speed, and ETA
 ```

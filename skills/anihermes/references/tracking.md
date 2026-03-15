@@ -33,7 +33,7 @@
    )
 
 4. Update tracker (if configured):
-   - Determine tracker: terminal("python3 -c \"from config import load_config; c=load_config(); print(c.get('tracker','anilist'))\"")
+   - Determine tracker: terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
    - Anilist: terminal("python3 ~/.hermes/scripts/anihermes_anilist_api.py status {media_id} CURRENT")
    - MAL: terminal("python3 ~/.hermes/scripts/anihermes_mal_api.py status {anime_id} watching")
 

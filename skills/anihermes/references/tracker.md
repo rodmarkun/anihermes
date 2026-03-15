@@ -2,7 +2,7 @@
 
 **IMPORTANT:** Before running any tracker command, determine which tracker is configured:
 ```
-terminal("python3 -c \"from config import load_config; c=load_config(); print(c.get('tracker','anilist'))\"")
+terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
 ```
 
 Then use the corresponding script:
@@ -17,7 +17,7 @@ Both scripts have identical CLI interfaces (same subcommands and arguments).
 
 ```
 1. Determine tracker:
-   terminal("python3 -c \"from config import load_config; c=load_config(); print(c.get('tracker','anilist'))\"")
+   terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
    - If "anilist": SCRIPT=anihermes_anilist_api.py
    - If "mal": SCRIPT=anihermes_mal_api.py
 

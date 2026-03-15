@@ -37,6 +37,18 @@ def _parse_yaml_simple(text):
             current_section = stripped[:-1]
             result[current_section] = {}
             current_list_key = None
+        elif indent == 0 and ":" in stripped:
+            # Top-level key: value (scalar, not a section)
+            key, val = stripped.split(":", 1)
+            key = key.strip()
+            val = val.strip()
+            if val.startswith('"') and val.endswith('"'):
+                val = val[1:-1]
+            elif val.startswith("'") and val.endswith("'"):
+                val = val[1:-1]
+            result[key] = val
+            current_section = None
+            current_list_key = None
         elif indent > 0 and current_section:
             if stripped.startswith("- "):
                 # List item
@@ -96,3 +108,44 @@ def load_config(config_path=None):
     config["mal"]["oauth_token"] = os.environ.get("MAL_OAUTH_TOKEN", "")
 
     return config
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="AniHermes config utility")
+    sub = parser.add_subparsers(dest="command")
+    sub.add_parser("show", help="Print loaded config as JSON (secrets redacted)")
+    sub.add_parser("get", help="Get a single config value").add_argument("key", help="Dot-notation key, e.g. tracker, anilist.username, storage.anime_path")
+
+    args = parser.parse_args()
+    if not args.command:
+        parser.print_help()
+        raise SystemExit(1)
+
+    cfg = load_config()
+
+    if args.command == "show":
+        # Redact secrets
+        safe = json.loads(json.dumps(cfg, default=str))
+        for section in ("torrent", "anilist", "mal"):
+            if section in safe:
+                for secret_key in ("password", "oauth_token"):
+                    if safe[section].get(secret_key):
+                        safe[section][secret_key] = "***"
+        print(json.dumps(safe, indent=2))
+
+    elif args.command == "get":
+        parts = args.key.split(".")
+        val = cfg
+        for p in parts:
+            if isinstance(val, dict):
+                val = val.get(p)
+            else:
+                val = None
+                break
+        if val is not None:
+            print(val if isinstance(val, str) else json.dumps(val))
+        else:
+            print(f"Key '{args.key}' not found", file=__import__("sys").stderr)
+            raise SystemExit(1)

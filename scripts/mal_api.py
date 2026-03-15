@@ -341,7 +341,9 @@ def main():
             ls = item.get("list_status", {})
             eps = anime.get("num_episodes", "?")
             progress = ls.get("num_episodes_watched", 0)
-            print(f"  [{anime['id']}] {anime['title']} - {progress}/{eps}")
+            status = anime.get("status", "")
+            air_str = " (still airing — not all episodes released yet)" if status == "currently_airing" else ""
+            print(f"  [{anime['id']}] {anime['title']} - {progress}/{eps}{air_str}")
 
     elif args.command == "update":
         success = update_progress(args.anime_id, args.episode, token)

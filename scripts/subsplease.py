@@ -170,8 +170,9 @@ def main():
             return 1
         print(f"Episodes for '{args.title}':")
         for ep in episodes:
-            has_magnet = "has magnet" if ep["magnet"] else "no magnet"
-            print(f"  Ep {ep['episode']} ({ep['release_date']}) [{has_magnet}]")
+            print(f"  Ep {ep['episode']} ({ep['release_date']})")
+            if ep["magnet"]:
+                print(f"    Magnet: {ep['magnet']}")
 
     elif args.command == "schedule":
         schedule = get_schedule()

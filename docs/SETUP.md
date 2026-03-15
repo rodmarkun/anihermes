@@ -52,7 +52,7 @@ The installer will prompt you for:
 |------|----------|
 | Config | `~/.hermes/anihermes/config.yaml` |
 | Scripts | `~/.hermes/scripts/anihermes_*.py` |
-| Skill | `~/.hermes/skills/media/anime-media-server/SKILL.md` |
+| Skill | `~/.hermes/skills/media/anihermes/SKILL.md` |
 | Secrets | `~/.hermes/.env` (appended) |
 
 ## Post-Install Verification
@@ -124,11 +124,20 @@ Run `./install.sh` again, or manually copy `config.example.yaml` to `~/.hermes/a
 ### Scripts fail with import error
 Ensure `config.py` exists in `~/.hermes/scripts/`. Re-run `./install.sh` if needed.
 
+### Hermes asks permission for every script call
+The installer offers to auto-allowlist AniHermes commands. If you skipped that, add these to `command_allowlist` in `~/.hermes/config.yaml`:
+```yaml
+command_allowlist:
+- "python3 ~/.hermes/scripts/anihermes_*"
+- "python3 -c \"from config import*"
+- "cd ~/.hermes/scripts*"
+```
+
 ## Uninstall
 
 ```bash
 rm -rf ~/.hermes/anihermes/
-rm -rf ~/.hermes/skills/media/anime-media-server/
+rm -rf ~/.hermes/skills/media/anihermes/
 rm ~/.hermes/scripts/anihermes_*.py
 # Remove AniHermes lines from ~/.hermes/.env manually
 ```

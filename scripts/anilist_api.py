@@ -437,8 +437,12 @@ def main():
             eps = entry["media"].get("episodes", "?")
             progress = entry["progress"]
             next_ep = entry["media"].get("nextAiringEpisode")
-            next_str = f" (next: ep {next_ep['episode']})" if next_ep else ""
-            print(f"  [{entry['media']['id']}] {title} - {progress}/{eps}{next_str}")
+            if next_ep:
+                aired = next_ep["episode"] - 1
+                air_str = f" (aired: {aired}/{eps}, next ep {next_ep['episode']} not yet released)"
+            else:
+                air_str = ""
+            print(f"  [{entry['media']['id']}] {title} - {progress}/{eps}{air_str}")
 
     elif args.command == "update":
         token = config["anilist"]["oauth_token"]

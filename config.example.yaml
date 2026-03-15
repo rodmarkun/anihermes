@@ -34,6 +34,11 @@ mal:
   # MAL API Client ID (get one at https://myanimelist.net/apiconfig)
   client_id: ""
 
+server:
+  port: 8888
+  # Bind address (0.0.0.0 = all interfaces = LAN accessible)
+  bind: 0.0.0.0
+
 notifications:
   # Platform for alerts: telegram, discord, or cli
   platform: telegram

@@ -1,13 +1,13 @@
 ---
-name: anime-media-server
-description: Anime media server — download episodes, check watchlist, track series, sync Anilist/MAL, identify anime from screenshots, manage library. Use this skill for ANY anime-related request including "what am I watching", "download", "track", "my anime library", "MyAnimeList", or "MAL".
+name: anihermes
+description: "Anything related to anime: downloads, watchlist, and more"
 version: 1.0.0
 author: AniHermes
 license: MIT
 platforms: [linux, macos]
 metadata:
   hermes:
-    tags: [anime, media-server, torrent, anilist, mal, myanimelist, subsplease, qbittorrent]
+    tags: [anime, media-server, torrent, anilist, mal, myanimelist, subsplease, qbittorrent, episodes, watchlist, watching, unwatched, jujutsu, frieren, one-piece]
     related_skills: [anime-server-workflow]
 ---
 
@@ -27,7 +27,7 @@ metadata:
 
 The config has a `tracker` field set to `anilist` or `mal`. **Always check which tracker is configured before running tracker commands.** Read it with:
 ```
-terminal("python3 -c \"from config import load_config; c=load_config(); print(c.get('tracker','anilist'))\"")
+terminal("python3 ~/.hermes/scripts/anihermes_config.py get tracker")
 ```
 
 Then use the appropriate script:
@@ -60,8 +60,9 @@ Load the reference file for the procedure you need:
 | Show my anime stats | (in SKILL.md) | Stats Card |
 | Compare with friend | (in SKILL.md) | Friend Sync |
 | Free up disk space | (in SKILL.md) | Storage Monitor & Auto-Cleanup |
+| Start/stop media server | (in SKILL.md) | LAN Media Server |
 
-**To load a procedure:** `skill_view("anime-media-server", "references/downloads.md")`
+**To load a procedure:** `skill_view("anihermes", "references/downloads.md")`
 
 ---
 
@@ -251,6 +252,23 @@ This is the "talk to your server like a person" experience. Infer intent from na
    - Summarize what was freed: "Freed {total_size} by removing {N} series"
 ```
 
+### LAN Media Server
+
+**Start triggers:** "Start the media server", "Start streaming", "Serve my library", "Stream anime on LAN", "Launch the server"
+
+**Stop triggers:** "Stop the media server", "Turn off the server", "Shut down streaming", "Kill the server", "Stop streaming", "Close the server", "Take down the server", "Stop the server"
+
+**Status triggers:** "Server status", "Is the server running?", "Media server status", "Check server", "Is streaming on?"
+
+| Action | Command |
+|--------|---------|
+| Start | `terminal("python3 ~/.hermes/scripts/anihermes_media_server.py start")` |
+| Stop | `terminal("python3 ~/.hermes/scripts/anihermes_media_server.py stop")` |
+| Status | `terminal("python3 ~/.hermes/scripts/anihermes_media_server.py status")` |
+| Custom port | `terminal("python3 ~/.hermes/scripts/anihermes_media_server.py start --port 9000")` |
+
+The server provides a styled web UI at `http://LAN_IP:8888/` where any device on the WiFi can browse and stream episodes. Supports video seeking (HTTP Range), concurrent streams, and works with phones, laptops, and smart TVs.
+
 ### Anime Scene Identification
 
 **Triggers:** User sends an image, "What anime is this?", "Identify this anime"
@@ -281,6 +299,8 @@ This is the "talk to your server like a person" experience. Infer intent from na
 6. **CRON job duplication** — Always check existing jobs before creating new ones.
 7. **Check tracker before commands** — Always read config `tracker` field first. Don't assume Anilist.
 8. **Storage cleanup is DESTRUCTIVE** — NEVER delete files without showing exactly what will be deleted and getting explicit user confirmation. Always dry-run first. Double-confirm before actual deletion.
+9. **NEVER hardcode paths or URLs** — Always use `add_torrent.py` for downloads (it reads `anime_path` from config). Never use `execute_code` to add torrents directly. Never hardcode `http://localhost:8081` — read from config instead.
+10. **Aired vs total episodes** — The watchlist output distinguishes between aired and total episodes. If a show says "(aired: 10/12, next ep 11 not yet released)" or "(still airing)", only count aired episodes as unwatched, NOT future unreleased ones. Example: progress 8/12, aired 10 → user has 2 unwatched (ep 9-10), NOT 4.
 
 ---
 

@@ -7,7 +7,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HERMES_DIR="${HOME}/.hermes"
 ANIHERMES_DIR="${HERMES_DIR}/anihermes"
-SKILLS_DIR="${HERMES_DIR}/skills/media/anime-media-server"
+SKILLS_DIR="${HERMES_DIR}/skills/media/anihermes"
 SCRIPTS_DIR="${HERMES_DIR}/scripts"
 OLD_SKILL_DIR="${HERMES_DIR}/skills/media/anime-server-workflow"
 
@@ -165,6 +165,10 @@ sources:
     - nyaa
   quality: ${quality}
 
+server:
+  port: 8888
+  bind: 0.0.0.0
+
 tracker: ${tracker:-anilist}
 
 anilist:
@@ -216,17 +220,42 @@ if [ -d "$OLD_SKILL_DIR" ]; then
 fi
 
 # Copy scripts (all use Python stdlib only — no pip install needed)
-for script in add_torrent.py anilist_api.py mal_api.py subsplease.py nyaa.py library_manager.py; do
+for script in add_torrent.py anilist_api.py mal_api.py subsplease.py nyaa.py library_manager.py media_server.py cronjobs.py; do
     cp "${SCRIPT_DIR}/scripts/${script}" "${SCRIPTS_DIR}/anihermes_${script}"
 done
 # config.py must be importable by all scripts — install without prefix
 cp "${SCRIPT_DIR}/scripts/config.py" "${SCRIPTS_DIR}/config.py"
+# Also install with prefix so Hermes can call it directly as a CLI tool
+cp "${SCRIPT_DIR}/scripts/config.py" "${SCRIPTS_DIR}/anihermes_config.py"
 echo "[OK] Scripts installed to ${SCRIPTS_DIR}/"
 
 # Install skill + references
-cp "${SCRIPT_DIR}/skills/anime-media-server/SKILL.md" "${SKILLS_DIR}/SKILL.md"
-cp "${SCRIPT_DIR}/skills/anime-media-server/references/"*.md "${SKILLS_DIR}/references/"
+cp "${SCRIPT_DIR}/skills/anihermes/SKILL.md" "${SKILLS_DIR}/SKILL.md"
+cp "${SCRIPT_DIR}/skills/anihermes/references/"*.md "${SKILLS_DIR}/references/"
 echo "[OK] Skill installed to ${SKILLS_DIR}/"
+
+# Auto-allowlist AniHermes scripts in Hermes config
+HERMES_CONFIG="${HERMES_DIR}/config.yaml"
+if [ -f "$HERMES_CONFIG" ]; then
+    if ! grep -q "anihermes_" "$HERMES_CONFIG" 2>/dev/null; then
+        echo ""
+        echo "Hermes will ask permission every time it runs AniHermes scripts."
+        read -rp "Auto-allowlist AniHermes commands? (no more permission prompts) [Y/n]: " allowlist_choice
+        if [ "${allowlist_choice,,}" != "n" ]; then
+            # Replace empty allowlist or append to existing one
+            if grep -q "command_allowlist: \[\]" "$HERMES_CONFIG" 2>/dev/null; then
+                sed -i 's/command_allowlist: \[\]/command_allowlist:\n- "python3 ~\/.hermes\/scripts\/anihermes_*"\n- "python3 -c \\"from config import*"\n- "cd ~\/.hermes\/scripts*"/' "$HERMES_CONFIG"
+            elif grep -q "command_allowlist:" "$HERMES_CONFIG" 2>/dev/null; then
+                sed -i '/command_allowlist:/a - "python3 ~\/.hermes\/scripts\/anihermes_*"\n- "python3 -c \\"from config import*"\n- "cd ~\/.hermes\/scripts*"' "$HERMES_CONFIG"
+            fi
+            echo "[OK] AniHermes commands allowlisted (no permission prompts)"
+        else
+            echo "[SKIP] You'll be prompted each time Hermes runs a script"
+        fi
+    else
+        echo "[SKIP] AniHermes commands already allowlisted"
+    fi
+fi
 
 echo ""
 echo "========================================"
