@@ -299,7 +299,7 @@ chmod 600 "$ENV_FILE"
 upsert_env() {
     local key="$1" value="$2" file="$3"
     if grep -q "^${key}=" "$file" 2>/dev/null; then
-        sed -i '' "s|^${key}=.*|${key}=${value}|" "$file"
+        sed -i "s|^${key}=.*|${key}=${value}|" "$file"
     else
         echo "${key}=${value}" >> "$file"
     fi
