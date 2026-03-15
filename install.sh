@@ -291,17 +291,26 @@ if [ -n "$mal_token" ]; then
 MAL_OAUTH_TOKEN=${mal_token}"
 fi
 
-# Append secrets to .env (only if not already present)
+# Upsert secrets into .env (update existing, append new)
 ENV_FILE="${HERMES_DIR}/.env"
 touch "$ENV_FILE"
 chmod 600 "$ENV_FILE"
-if ! grep -q "QBIT_USERNAME" "$ENV_FILE" 2>/dev/null; then
-    echo "" >> "$ENV_FILE"
-    echo "$secrets" >> "$ENV_FILE"
-    echo "[OK] Secrets appended to ${ENV_FILE}"
-else
-    echo "[SKIP] AniHermes secrets already in .env (edit ${ENV_FILE} to update)"
-fi
+
+upsert_env() {
+    local key="$1" value="$2" file="$3"
+    if grep -q "^${key}=" "$file" 2>/dev/null; then
+        sed -i '' "s|^${key}=.*|${key}=${value}|" "$file"
+    else
+        echo "${key}=${value}" >> "$file"
+    fi
+}
+
+upsert_env "QBIT_USERNAME" "$qbit_user" "$ENV_FILE"
+upsert_env "QBIT_PASSWORD" "$qbit_pass" "$ENV_FILE"
+[ -n "$anilist_token" ] && upsert_env "ANILIST_OAUTH_TOKEN" "$anilist_token" "$ENV_FILE"
+[ -n "$mal_client_id" ] && upsert_env "MAL_CLIENT_ID" "$mal_client_id" "$ENV_FILE"
+[ -n "$mal_token" ] && upsert_env "MAL_OAUTH_TOKEN" "$mal_token" "$ENV_FILE"
+echo "[OK] Secrets updated in ${ENV_FILE}"
 
 # Remove old skill if present (upgrade from anime-server-workflow)
 if [ -d "$OLD_SKILL_DIR" ]; then

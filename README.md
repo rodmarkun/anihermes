@@ -139,6 +139,16 @@ python3 ~/.hermes/scripts/anihermes_add_torrent.py --series "Frieren" --season "
 - [Telegram Setup](docs/TELEGRAM.md) — Telegram bot integration
 - [Anilist Setup](docs/ANILIST.md) — Anilist OAuth and watchlist sync
 
+## Disclaimer
+
+AniHermes is provided "as is", without warranty of any kind. This software is a media management and automation framework intended for use with legally obtained content. The developers do not host, distribute, or provide access to any copyrighted material.
+
+Users are solely responsible for ensuring that their use of this software complies with all applicable local, state, national, and international laws, including copyright and intellectual property laws. The developers assume no liability for any misuse of this software or for any content downloaded, managed, or distributed by users through this tool.
+
+By using this software, you agree that the developers shall not be held responsible or liable for any damages, legal actions, or claims arising from your use of the software or the content you obtain through it.
+
+This project references third-party services and APIs (SubsPlease, Nyaa.si, Anilist, MyAnimeList). These services are independently operated, and the developers of AniHermes have no affiliation with, endorsement from, or responsibility for those services or their content.
+
 ## License
 
 MIT

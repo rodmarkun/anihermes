@@ -104,7 +104,7 @@ def load_config(config_path=None):
     config["torrent"]["username"] = os.environ.get("QBIT_USERNAME", "")
     config["torrent"]["password"] = os.environ.get("QBIT_PASSWORD", "")
     config["anilist"]["oauth_token"] = os.environ.get("ANILIST_OAUTH_TOKEN", "")
-    config["mal"].setdefault("client_id", os.environ.get("MAL_CLIENT_ID", ""))
+    config["mal"]["client_id"] = os.environ.get("MAL_CLIENT_ID", "")
     config["mal"]["oauth_token"] = os.environ.get("MAL_OAUTH_TOKEN", "")
 
     return config
