@@ -9,6 +9,7 @@ HERMES_DIR="${HOME}/.hermes"
 ANIHERMES_DIR="${HERMES_DIR}/anihermes"
 SKILLS_DIR="${HERMES_DIR}/skills/media/anihermes"
 SCRIPTS_DIR="${HERMES_DIR}/scripts"
+SKINS_DIR="${HERMES_DIR}/skins"
 OLD_SKILL_DIR="${HERMES_DIR}/skills/media/anime-server-workflow"
 
 echo "========================================"
@@ -90,6 +91,48 @@ mal_token=""
 if [ "$tracker_choice" = "1" ] || [ "$tracker_choice" = "3" ]; then
     tracker="anilist"
     read -rp "Anilist username (for watchlist sync): " anilist_user
+
+    echo ""
+    echo "=== Anilist OAuth Setup (for updating progress) ==="
+    echo ""
+    echo "To update your watch progress from AniHermes, you need an OAuth token."
+    echo ""
+    echo "Step 1: Create an API client at https://anilist.co/settings/developer"
+    echo "  - Click 'Create New Client'"
+    echo "  - Name: AniHermes (or anything)"
+    echo "  - Redirect URL: https://anilist.co/api/v2/oauth/pin  <-- IMPORTANT!"
+    echo "  - Save and note your Client ID"
+    echo ""
+    read -rp "Enter your Anilist Client ID (or press Enter to skip OAuth): " anilist_client_id
+
+    if [ -n "$anilist_client_id" ]; then
+        echo ""
+        echo "Step 2: Authorize the app"
+        echo "  Open this URL in your browser:"
+        echo ""
+        echo "  https://anilist.co/api/v2/oauth/authorize?client_id=${anilist_client_id}&response_type=token"
+        echo ""
+        echo "Step 3: After clicking 'Authorize', you'll be redirected to a URL like:"
+        echo "  https://anilist.co/api/v2/oauth/pin#access_token=eyJ...LONG_TOKEN...&token_type=Bearer"
+        echo ""
+        echo "  Copy the ENTIRE access_token value (starts with 'eyJ', ~1000 chars long)"
+        echo ""
+        read -rsp "Paste your token here (or Enter to skip): " anilist_token
+        echo ""
+
+        # Validate token format
+        if [ -n "$anilist_token" ]; then
+            if [[ ! "$anilist_token" =~ ^eyJ ]]; then
+                echo "[WARN] Token doesn't look like a JWT (should start with 'eyJ')"
+                echo "       You may have copied the wrong value. Update later in ~/.hermes/.env"
+            elif [ ${#anilist_token} -lt 100 ]; then
+                echo "[WARN] Token seems too short (${#anilist_token} chars, expected ~1000)"
+                echo "       Make sure you copied the entire access_token value"
+            else
+                echo "[OK] Token looks valid (${#anilist_token} chars)"
+            fi
+        fi
+    fi
 fi
 
 if [ "$tracker_choice" = "2" ] || [ "$tracker_choice" = "3" ]; then
@@ -97,10 +140,65 @@ if [ "$tracker_choice" = "2" ] || [ "$tracker_choice" = "3" ]; then
         tracker="mal"
     fi
     read -rp "MAL username (for watchlist sync): " mal_user
-    echo "MAL requires a Client ID for API access."
-    echo "  Get one at: https://myanimelist.net/apiconfig"
-    echo "  Create an app, set redirect to 'http://localhost', copy the Client ID."
+
+    echo ""
+    echo "=== MyAnimeList API Setup ==="
+    echo ""
+    echo "MAL requires a Client ID for API access (even read-only)."
+    echo ""
+    echo "Step 1: Create an API client at https://myanimelist.net/apiconfig"
+    echo "  - Click 'Create ID'"
+    echo "  - App Type: 'other'"
+    echo "  - App Redirect URL: http://localhost"
+    echo "  - Save and copy your Client ID"
+    echo ""
     read -rp "MAL Client ID: " mal_client_id
+
+    if [ -n "$mal_client_id" ]; then
+        echo ""
+        echo "Step 2: Get an OAuth token (for updating progress)"
+        echo ""
+        echo "MAL uses PKCE OAuth. Here's how to get your token:"
+        echo ""
+        # Generate a random code verifier (43-128 chars, alphanumeric)
+        code_verifier=$(head -c 64 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 64)
+        echo "  Your code verifier (save this!): $code_verifier"
+        echo ""
+        echo "  Open this URL in your browser:"
+        echo ""
+        echo "  https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${mal_client_id}&code_challenge=${code_verifier}&code_challenge_method=plain"
+        echo ""
+        echo "Step 3: After clicking 'Allow', you'll be redirected to:"
+        echo "  http://localhost?code=AUTHORIZATION_CODE"
+        echo ""
+        echo "  Copy the 'code' value from the URL (everything after 'code=')"
+        echo ""
+        read -rp "Paste the authorization code here (or Enter to skip): " auth_code
+
+        if [ -n "$auth_code" ]; then
+            echo ""
+            echo "Exchanging code for access token..."
+            # Exchange the code for a token
+            token_response=$(curl -s -X POST "https://myanimelist.net/v1/oauth2/token" \
+                -H "Content-Type: application/x-www-form-urlencoded" \
+                -d "client_id=${mal_client_id}&grant_type=authorization_code&code=${auth_code}&code_verifier=${code_verifier}" 2>/dev/null)
+
+            # Extract access_token from JSON response
+            mal_token=$(echo "$token_response" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('access_token',''))" 2>/dev/null)
+
+            if [ -n "$mal_token" ]; then
+                echo "[OK] Got MAL access token (${#mal_token} chars)"
+            else
+                error_msg=$(echo "$token_response" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('error','unknown error'))" 2>/dev/null)
+                echo "[ERROR] Failed to get token: $error_msg"
+                echo "        You can retry later or update ~/.hermes/.env manually"
+                mal_token=""
+            fi
+        else
+            echo ""
+            echo "(Skipping OAuth - read-only access works with just the Client ID)"
+        fi
+    fi
 fi
 
 if [ "$tracker_choice" = "3" ]; then
@@ -128,17 +226,6 @@ read -rsp "qbittorrent password [adminadmin]: " qbit_pass
 qbit_pass="${qbit_pass:-adminadmin}"
 echo ""
 
-# Tracker OAuth tokens
-if [ -n "$anilist_user" ]; then
-    read -rsp "Anilist OAuth token (optional, for updating progress): " anilist_token
-    echo ""
-fi
-
-if [ -n "$mal_user" ]; then
-    read -rsp "MAL OAuth token (optional, for updating progress): " mal_token
-    echo ""
-fi
-
 echo ""
 echo "--- Installing ---"
 echo ""
@@ -147,6 +234,7 @@ echo ""
 mkdir -p "$ANIHERMES_DIR"
 mkdir -p "$SKILLS_DIR/references"
 mkdir -p "$SCRIPTS_DIR"
+mkdir -p "$SKINS_DIR"
 
 # Generate config.yaml
 cat > "${ANIHERMES_DIR}/config.yaml" <<EOF
@@ -234,6 +322,10 @@ cp "${SCRIPT_DIR}/skills/anihermes/SKILL.md" "${SKILLS_DIR}/SKILL.md"
 cp "${SCRIPT_DIR}/skills/anihermes/references/"*.md "${SKILLS_DIR}/references/"
 echo "[OK] Skill installed to ${SKILLS_DIR}/"
 
+# Install skin
+cp "${SCRIPT_DIR}/skins/anihermes.yaml" "${SKINS_DIR}/anihermes.yaml"
+echo "[OK] Skin installed to ${SKINS_DIR}/"
+
 # Auto-allowlist AniHermes scripts in Hermes config
 HERMES_CONFIG="${HERMES_DIR}/config.yaml"
 if [ -f "$HERMES_CONFIG" ]; then
@@ -257,6 +349,13 @@ if [ -f "$HERMES_CONFIG" ]; then
     fi
 fi
 
+# Offer to enable the skin
+echo ""
+read -rp "Enable the AniHermes skin now? (You can always do so with /skin anihermes) [Y/n]: " enable_skin
+if [ "${enable_skin,,}" != "n" ]; then
+    hermes "/skin anihermes" 2>/dev/null && echo "[OK] AniHermes skin enabled" || echo "[SKIP] Could not enable skin (enable manually with: /skin anihermes)"
+fi
+
 echo ""
 echo "========================================"
 echo "  AniHermes installed successfully!"
@@ -275,4 +374,6 @@ fi
 if [ -n "$mal_user" ]; then
     echo "  'Sync my MAL watchlist'"
 fi
+echo ""
+echo "Skin: /skin anihermes"
 echo ""

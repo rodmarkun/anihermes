@@ -1,0 +1,38 @@
+name: anihermes
+description: "Anime media server — sakura pink and midnight blue"
+
+colors:
+  banner_border: "#FF6B9D"
+  banner_title: "#FF6B9D"
+  banner_accent: "#B8A9C9"
+  banner_dim_text: "#8B9DC3"
+  banner_body_text: "#FFF5EE"
+  accent: "#FF6B9D"
+  labels: "#B8A9C9"
+  success: "#7FDBCA"
+  error: "#FF6B6B"
+  warning: "#FFBE76"
+  input_area_bg: "#1E3A5F"
+  response_area_bg: "#0D1F2D"
+  session_name: "#FF6B9D"
+  session_info: "#8B9DC3"
+
+spinner:
+  waiting_faces: ["(◕‿◕)", "(◠‿◠)", "(⌒‿⌒)", "(｡◕‿◕｡)"]
+  thinking_faces: ["(◕ᴗ◕✿)", "(✧ω✧)", "(◉‿◉)", "(★ω★)"]
+  thinking_verbs: ["searching MAL", "scanning SubsPlease", "querying Anilist", "finding torrents", "checking episodes"]
+  wings: ["「", "」"]
+
+branding:
+  agent_name: "AniHermes"
+  welcome_message: "✦ AniHermes ready — your anime awaits"
+  exit_message: "じゃあね！See you next episode~"
+  response_label: "AniHermes"
+  prompt_symbol: "❯"
+  help_header: "AniHermes Commands"
+
+tool_prefix: "┃"
+
+banner_logo: "[bold #FF6B9D]   _          _ _   _\n  / \\   _ __ (_) | | | ___ _ __ _ __ ___   ___  ___\n / _ \\ | '_ \\| | |_| |/ _ \\ '__| '_ ` _ \\ / _ \\/ __|\n/ ___ \\| | | | |  _  |  __/ |  | | | | | |  __/\\__ \\\n/_/   \\_\\_| |_|_|_| |_|\\___|_|  |_| |_| |_|\\___||___/[/]"
+
+banner_hero: "[#FF6B9D]⣿⣿⣿⣿⡇⣿⣿⢸⡇⢱⣿⣿⣿⣿⣿⡿⢱⣿⢋⣾⣿⣿⣿⣿⡆⡙⢷⣙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡘⠻⣿⣆⢻⣿⣿⣿⣿⣿⣿⡄⠟⠼⢋⣴⣿⠟⣫⣵⣿⢸⡖⣡[/]\n[#B8A9C9]⣿⣿⣿⣿⢰⣿⣿⢸⢇⣿⣿⣿⣿⣿⣿⢡⣿⢣⣾⣿⣿⣿⣿⣿⡇⢹⣤⣙⢷⣝⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡹⣿⣧⢻⣿⣿⣿⣿⣿⣿⡄⢵⣿⠟⣵⣾⣿⣿⢣⡏⢸⣿[/]\n[#FF6B9D]⣿⣿⣿⡟⣼⣿⣿⠸⣸⣿⣿⣿⣿⣿⡏⣾⢇⣾⣿⣿⣿⣿⣿⣿⡇⣾⣿⣿⣷⣬⣓⢮⣛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡜⣿⣆⢿⣿⣿⣿⣿⡟⢿⡜⢣⣾⣿⣿⣿⡏⡎⣼⡇⣿[/]\n[#B8A9C9]⣿⣿⣿⡇⣿⣿⣿⡆⡟⣿⣿⣿⣿⣿⡇⡟⣼⣿⣿⣿⣿⣿⣿⣿⡇⣿⣿⣿⣿⣿⣿⣷⣮⣍⣒⠍⢋⡩⠭⢹⣿⣿⣿⣿⣿⡘⣿⡌⣿⣿⣿⣿⣿⡘⣷⢹⣿⣿⣿⡟⡸⣸⣿⣇⣿[/]\n[#FF6B9D]⣿⣿⣿⢱⣿⣿⣿⢱⡇⣿⣿⣿⣿⣿⡀⢣⣿⣿⣿⣿⣿⣿⢿⣿⢡⣿⣿⣿⣿⣿⣿⣿⣿⣿⢣⣿⡶⢞⣡⣤⡒⠒⠚⣛⣛⣥⢹⣷⠙⣹⣿⣿⣿⣇⣿⡌⣿⣿⣿⢡⢡⣿⣿⣿⣿[/]\n[#B8A9C9]⣿⣿⣿⢸⣿⣿⡏⢸⡇⣿⣿⣿⣿⣿⡇⣸⣿⣿⣿⣿⣿⡟⢰⠇⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣴⣶⣶⠟⣩⣴⣾⡿⠛⠛⠙⠫⠌⢁⡌⣿⣿⣿⣿⣿⢸⡇⠿⢟⣵⠃⡇⣿⣿⣿⣿[/]\n[#FF6B9D]⣿⣿⣿⢸⣿⣿⡇⢸⡇⣿⣿⣿⣿⣿⣇⢿⣿⣿⣿⣿⡿⢑⠊⣬⡟⢛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⢢⡿⠋⠐⠀⢀⠤⠀⠀⠄⢻⡇⣿⣿⣿⣿⡿⢸⣇⣜⠻⢣⣾⡇⣿⣿⣿⣿[/]\n[#B8A9C9]⣿⣿⣿⢸⣿⣿⢸⣸⡇⣿⣿⣿⣿⣿⣿⠸⣿⣿⣿⡋⠎⠈⠾⡛⠵⠿⢿⣦⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⠗⢀⣾⡀⠻⢀⣠⠇⢤⢸⢱⣿⣿⣿⣿⡇⠊⡯⠋⣴⣿⣿⣷⣿⣿⣿⣿[/]\n[#FF6B9D]⣐⠶⣿⣬⣭⣭⣼⡃⣇⢻⣿⣿⣿⣿⣿⣇⢿⣿⡿⠃⣰⢟⣡⣾⣿⣷⣦⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⣼⣿⣿⣯⠍⢁⣰⣿⠘⡜⣿⣿⣿⣿⢱⠀⠃⡇⢹⣿⣿⣿⣿⣿⣿⣿[/]\n[#B8A9C9]⣜⡳⢄⠲⠎⣭⢟⡃⣿⢸⣿⣿⣿⣿⣿⣿⡘⢟⣥⣾⣧⡾⠛⠉⠉⠉⠉⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⢠⡇⣿⣿⣿⡏⡆⢣⠀⠀⡜⣿⣿⣿⣿⣿⣿⣿[/]\n[#FF6B9D]⣿⣿⣶⡍⠻⢿⡜⢷⢸⡆⣿⣿⣿⣿⣿⡝⣧⢻⡻⠿⠟⠁⣠⡆⠰⢷⠀⢀⠀⣍⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⣿⡇⣿⣿⡟⡼⢰⢸⢀⠆⡇⢿⣿⣿⣿⣿⣿⣿[/]\n[#B8A9C9]⣿⣿⣿⡇⠞⣶⢉⠲⡌⣿⠸⣿⣿⣿⣿⣷⠹⣄⠻⣿⣶⣦⡙⠿⣶⣆⣘⠛⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣾⣿⡇⣿⠟⣼⢡⢸⢸⣿⢠⢡⣾⣿⣿⣿⣿⡿⣿[/]\n[#FF6B9D]⣿⣿⣿⣿⢀⣿⢸⣿⣆⢻⡇⢻⣿⣿⣿⣿⣧⢻⡜⣌⠻⣿⣿⣿⣴⣥⣦⣶⣾⣿⣿⣿⣿⠟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⡇⢏⣾⢣⣾⢨⡇⣿⡆⣼⣿⣼⣿⣿⣿⣇⣿[/]"
